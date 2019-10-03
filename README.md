@@ -1,1 +1,1 @@
-# algorithms-project-2
+# ai-project-2

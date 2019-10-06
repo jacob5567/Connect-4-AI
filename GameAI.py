@@ -7,24 +7,16 @@ import random
 
 
 def main():
-    firstMove = Move()
-    for i in range(7):
-        firstMove.add_child(Move(i, 'X', firstMove))
+    head = Move()
+    populate(head, 5)
 
-    for i in range(7):
-        for j in range(7):
-            firstMove.children[i].add_child(
-                Move(j, 'O', firstMove.children[i]))
 
-    game = C4Game()
-    currentMove = firstMove
-    while len(currentMove.children) > 0:
-        print(currentMove)
-        # print(game)
-        nextMove = random.choice(currentMove.children)
-        game.make_move(nextMove.col)
-        currentMove = nextMove
-    print(game)
+def populate(move, depth):
+    for i in range(7):
+        move.add_child(Move(i, 'O' if move.player == 'X' else 'X', move))
+    if (depth > 0):
+        for child in move.children:
+            populate(child, depth - 1)
 
 
 if __name__ == "__main__":

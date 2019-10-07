@@ -4,19 +4,26 @@ from Move import Move
 from Connect4 import C4Game
 import random
 import math
+import copy
 
 FIRST_PLAYER = 'O'
 
 
 def main():
     head = Move(None, 'O', None)
-    populate(head, 2)
-    for _ in range(500):
+    print("populating...")
+    populate(head, 5)
+    print("monte carlo")
+    for _ in range(10000):
         monteCarlo(head)
     # print(head.numWinsAndSimsStr())
+    print("outputting...")
     outputToFile(head)
+    print("alphabeta")
     print(alphabeta(head, 2, -math.inf, math.inf, 'X'))
     # printGames(head)
+    print("generating lookup table..")
+    makeLookupTable(head, C4Game())
 
 
 def populate(move, depth):
@@ -110,6 +117,21 @@ def outputToFile(move):
         f.close()
     for child in move.children:
         outputToFile(child)
+
+
+def makeLookupTable(move, game):
+    f = open("JacobFaulkLookupTable.txt", 'a')
+    f.write("Player: " + str(move.player) + '\n')
+    if move.col is not None:
+        game.make_move(move.col)
+    f.write(str(game))
+    if move.children:
+        f.write('\n' + str(max(move.children).col) + '\n')
+    else:
+        f.write("\nrandom choice\n")
+    f.close()
+    for child in move.children:
+        makeLookupTable(child, copy.deepcopy(game))
 
 
 if __name__ == "__main__":

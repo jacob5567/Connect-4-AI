@@ -26,13 +26,15 @@ class Move:
 
     def addNumSimulations(self, num):
         self.numSimulations += num
-        self.ucb1 = Move.calculateUCB1(
-            self.numSimulations, self.numWins, self.parent.numSimulations)
+        if self.parent is not None:
+            self.ucb1 = Move.calculateUCB1(
+                self.numSimulations, self.numWins, self.parent.numSimulations)
 
     def addNumWins(self, num):
         self.numWins += num
-        self.ucb1 = Move.calculateUCB1(
-            self.numSimulations, self.numWins, self.parent.numSimulations)
+        if self.parent is not None:
+            self.ucb1 = Move.calculateUCB1(
+                self.numSimulations, self.numWins, self.parent.numSimulations)
 
     def numWinsAndSimsStr(self):
         return str(self.numWins) + "/" + str(self.numSimulations)
@@ -42,7 +44,7 @@ class Move:
 
     @classmethod
     def calculateUCB1(cls, samples, wins, parentSamples):
-        if samples == 0:
+        if samples == 0 or parentSamples == 0:
             return math.inf
         return (wins / samples) + (math.sqrt(2) * math.sqrt(math.log(parentSamples) / samples))
 

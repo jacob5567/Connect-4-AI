@@ -8,8 +8,10 @@ import random
 
 def main():
     head = Move()
-    populate(head, 7)
-    printGames(head)
+    populate(head, 5)
+    monteCarlo(head)
+    head.printNumWinsAndSims()
+    # printGames(head)
 
 
 def populate(move, depth):
@@ -20,15 +22,35 @@ def populate(move, depth):
             populate(child, depth - 1)
 
 
-def monteCarlo(move):
+def monteCarlo(move, game=None):
     if move.children:
         for child in move.children:
             monteCarlo(child)
     else:
-        # TODO add until game complete
-        # TODO backpropegate results
-        move.add_random_child()
-        monteCarlo(move.children[0])
+        if game is None:
+            game = C4Game()
+            parents = []
+            parents.append(move)
+            currentParent = move.parent
+            while (currentParent.col is not None):
+                parents.append(currentParent)
+                currentParent = currentParent.parent
+            parents.reverse()
+            for m in parents:
+                if not game.make_move(m.col):
+                    return
+        if (game.winner() != False):
+            # print(game.winner())
+            # TODO add stalemate option
+            backpropegate(move, 1, 1 if game.winner() == 'X' else 0)
+            return
+        if(game.available_moves()):
+            move.addRandomChildFromSelection(game.available_moves())
+            game.make_move(move.col)
+            monteCarlo(move.children[0], game)
+        else:
+            pass
+            # TODO backpropegate results
 
 
 def printGames(move):
@@ -48,6 +70,13 @@ def printGames(move):
             if not game.make_move(m.col):
                 return
         print(game)
+
+
+def backpropegate(move, numSimulations, numWins):
+    move.addNumSimulations(numSimulations)
+    move.addNumWins(numWins)
+    if move.parent is not None:
+        backpropegate(move.parent, numSimulations, numWins)
 
 
 if __name__ == "__main__":

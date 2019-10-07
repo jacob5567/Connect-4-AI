@@ -4,12 +4,16 @@ from Move import Move
 from Connect4 import C4Game
 import random
 
+FIRST_PLAYER = 'O'
+
 
 def main():
-    head = Move()
-    populate(head, 5)
-    monteCarlo(head)
-    head.printNumWinsAndSims()
+    head = Move(None, 'O', None)
+    populate(head, 2)
+    for _ in range(500):
+        monteCarlo(head)
+    # print(head.numWinsAndSimsStr())
+    outputToFile(head)
     # printGames(head)
 
 
@@ -23,8 +27,7 @@ def populate(move, depth):
 
 def monteCarlo(move, game=None):
     if move.children:
-        for child in move.children:
-            monteCarlo(child)
+        monteCarlo(max(move.children))
     else:
         game = C4Game()
         parents = []
@@ -37,7 +40,7 @@ def monteCarlo(move, game=None):
         for m in parents:
             if not game.make_move(m.col):
                 return
-        backpropegate(move, 1, 1 if simulateRestOfGame(game) == 'X' else 0)
+        backpropegate(move, simulateRestOfGame(game))
 
 
 def printGames(move):
@@ -59,17 +62,29 @@ def printGames(move):
         print(game)
 
 
-def backpropegate(move, numSimulations, numWins):
-    move.addNumSimulations(numSimulations)
-    move.addNumWins(numWins)
+def backpropegate(move, winner):
+    move.addNumSimulations(1)
+    move.addNumWins(1 if winner != move.player else 0)
     if move.parent is not None:
-        backpropegate(move.parent, numSimulations, numWins)
+        backpropegate(move.parent, winner)
 
 
 def simulateRestOfGame(game):
     while game.winner() == False:
         game.make_move(random.choice(game.available_moves()))
     return game.winner()
+
+
+def outputToFile(move):
+    if(move.col is not None):
+        f = open("outputFile.txt", 'a')
+        f.write("Player: " + str(move.player) +
+                "; Column: " + str(move.col) + "; ")
+        f.write(move.numWinsAndSimsStr())
+        f.write('\n')
+        f.close()
+    for child in move.children:
+        outputToFile(child)
 
 
 if __name__ == "__main__":

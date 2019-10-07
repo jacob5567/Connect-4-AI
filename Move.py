@@ -1,4 +1,5 @@
 import random
+import math
 
 
 class Move:
@@ -28,8 +29,32 @@ class Move:
     def addNumWins(self, num):
         self.numWins += num
 
-    def printNumWinsAndSims(self):
-        print(str(self.numWins) + "/" + str(self.numSimulations))
+    def numWinsAndSimsStr(self):
+        return str(self.numWins) + "/" + str(self.numSimulations)
 
     def __str__(self):
         return str(self.col) + str(self.player)
+
+    @classmethod
+    def calculateUCB1(cls, samples, wins, parentSamples):
+        if samples == 0:
+            return math.inf
+        return (wins / samples) + (math.sqrt(2) * math.sqrt(math.log(parentSamples) / samples))
+
+    def __eq__(self, other):
+        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) == Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+
+    def __ne__(self, other):
+        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) != Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+
+    def __lt__(self, other):
+        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) < Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+
+    def __le__(self, other):
+        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) <= Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+
+    def __gt__(self, other):
+        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) > Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+
+    def __ge__(self, other):
+        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) >= Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)

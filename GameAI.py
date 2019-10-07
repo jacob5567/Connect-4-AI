@@ -1,6 +1,5 @@
 # Jacob Faulk
 
-from GameInstance import GameInstance
 from Move import Move
 from Connect4 import C4Game
 import random
@@ -17,7 +16,7 @@ def main():
 def populate(move, depth):
     for i in range(7):
         move.add_child(Move(i, 'O' if move.player == 'X' else 'X', move))
-    if (depth > 0):
+    if depth > 0:
         for child in move.children:
             populate(child, depth - 1)
 
@@ -31,7 +30,7 @@ def monteCarlo(move, game=None):
         parents = []
         parents.append(move)
         currentParent = move.parent
-        while (currentParent.col is not None):
+        while currentParent.col is not None:
             parents.append(currentParent)
             currentParent = currentParent.parent
         parents.reverse()
@@ -68,7 +67,7 @@ def backpropegate(move, numSimulations, numWins):
 
 
 def simulateRestOfGame(game):
-    while (game.winner() == False):
+    while game.winner() == False:
         game.make_move(random.choice(game.available_moves()))
     return game.winner()
 

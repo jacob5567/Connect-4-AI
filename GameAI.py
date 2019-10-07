@@ -3,6 +3,7 @@
 from Move import Move
 from Connect4 import C4Game
 import random
+import math
 
 FIRST_PLAYER = 'O'
 
@@ -14,6 +15,7 @@ def main():
         monteCarlo(head)
     # print(head.numWinsAndSimsStr())
     outputToFile(head)
+    print(alphabeta(head, 2, -math.inf, math.inf, 'X'))
     # printGames(head)
 
 
@@ -41,6 +43,29 @@ def monteCarlo(move, game=None):
             if not game.make_move(m.col):
                 return
         backpropegate(move, simulateRestOfGame(game))
+
+
+def alphabeta(move, depth, alpha, beta, maximizingPlayer):
+    if depth == 0 or not move.children:
+        return Move.calculateUCB1(move.numSimulations, move.numWins, move.parent.numSimulations)
+    if move.player == maximizingPlayer:
+        value = -math.inf
+        for child in move.children:
+            value = max(value, alphabeta(child, depth - 1, alpha,
+                                         beta, 'O' if maximizingPlayer == 'X' else 'X'))
+            alpha = max(alpha, value)
+            if alpha >= beta:
+                break
+        return value
+    else:
+        value = math.inf
+        for child in move.children:
+            value = min(value, alphabeta(child, depth -
+                                         1, alpha, beta, maximizingPlayer))
+            beta = min(beta, value)
+            if alpha >= beta:
+                break
+        return value
 
 
 def printGames(move):

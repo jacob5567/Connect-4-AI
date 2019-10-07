@@ -11,6 +11,7 @@ class Move:
         self.children = []
         self.numSimulations = 0
         self.numWins = 0
+        self.ucb1 = math.inf
 
     def add_child(self, child):
         self.children.append(child)
@@ -25,9 +26,13 @@ class Move:
 
     def addNumSimulations(self, num):
         self.numSimulations += num
+        self.ucb1 = Move.calculateUCB1(
+            self.numSimulations, self.numWins, self.parent.numSimulations)
 
     def addNumWins(self, num):
         self.numWins += num
+        self.ucb1 = Move.calculateUCB1(
+            self.numSimulations, self.numWins, self.parent.numSimulations)
 
     def numWinsAndSimsStr(self):
         return str(self.numWins) + "/" + str(self.numSimulations)
@@ -42,19 +47,19 @@ class Move:
         return (wins / samples) + (math.sqrt(2) * math.sqrt(math.log(parentSamples) / samples))
 
     def __eq__(self, other):
-        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) == Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+        return self.ucb1 == other.ucb1
 
     def __ne__(self, other):
-        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) != Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+        return self.ucb1 != other.ucb1
 
     def __lt__(self, other):
-        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) < Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+        return self.ucb1 < other.ucb1
 
     def __le__(self, other):
-        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) <= Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+        return self.ucb1 <= other.ucb1
 
     def __gt__(self, other):
-        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) > Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+        return self.ucb1 > other.ucb1
 
     def __ge__(self, other):
-        return Move.calculateUCB1(self.numSimulations, self.numWins, self.parent.numSimulations) >= Move.calculateUCB1(other.numSimulations, other.numWins, other.parent.numSimulations)
+        return self.ucb1 >= other.ucb1

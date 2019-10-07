@@ -27,30 +27,18 @@ def monteCarlo(move, game=None):
         for child in move.children:
             monteCarlo(child)
     else:
-        if game is None:
-            game = C4Game()
-            parents = []
-            parents.append(move)
-            currentParent = move.parent
-            while (currentParent.col is not None):
-                parents.append(currentParent)
-                currentParent = currentParent.parent
-            parents.reverse()
-            for m in parents:
-                if not game.make_move(m.col):
-                    return
-        if (game.winner() != False):
-            # print(game.winner())
-            # TODO add stalemate option
-            backpropegate(move, 1, 1 if game.winner() == 'X' else 0)
-            return
-        if(game.available_moves()):
-            move.addRandomChildFromSelection(game.available_moves())
-            game.make_move(move.col)
-            monteCarlo(move.children[0], game)
-        else:
-            pass
-            # TODO backpropegate results
+        game = C4Game()
+        parents = []
+        parents.append(move)
+        currentParent = move.parent
+        while (currentParent.col is not None):
+            parents.append(currentParent)
+            currentParent = currentParent.parent
+        parents.reverse()
+        for m in parents:
+            if not game.make_move(m.col):
+                return
+        backpropegate(move, 1, 1 if simulateRestOfGame(game) == 'X' else 0)
 
 
 def printGames(move):
@@ -77,6 +65,12 @@ def backpropegate(move, numSimulations, numWins):
     move.addNumWins(numWins)
     if move.parent is not None:
         backpropegate(move.parent, numSimulations, numWins)
+
+
+def simulateRestOfGame(game):
+    while (game.winner() == False):
+        game.make_move(random.choice(game.available_moves()))
+    return game.winner()
 
 
 if __name__ == "__main__":

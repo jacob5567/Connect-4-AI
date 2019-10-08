@@ -5,10 +5,10 @@ import copy
 import random
 from time import sleep
 
-DELAY = 1.0  # allows you to watch the game at human speed -- set to 0 for the computer to play quickly.
+DELAY = 0  # allows you to watch the game at human speed -- set to 0 for the computer to play quickly.
 
 """ Function: run_tournament
-    Description: Runs two rounds of Connect 4, the first has X move first and the second has O move first.  The 
+    Description: Runs two rounds of Connect 4, the first has X move first and the second has O move first.  The
     moves are delayed by DELAY seconds to allow a human to watch the game in real time.
 """
 def run_tournament():

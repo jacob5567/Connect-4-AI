@@ -4,15 +4,16 @@ from Connect4 import C4Game
 import copy
 import math
 import random
-
-SCORE_BONUS_3 = 100
-SCORE_BONUS_2 = 50
-SCORE_DETRACTION_3 = 100
-SCORE_DETRACTION_2 = 50
-PREFER_HIGHER_ROWS_MULTIPLIER = 3
-PREFER_CENTRAL_COLUMN_MULTIPLIER = 4
-PREFER_NEARBY_COLUMNS_MULTIPLIER = 2
-ALPHA_BETA_DEPTH_LEVEL = 6
+SCORE_BONUS_4 = 10000
+SCORE_DETRACTION_4 = 10000
+SCORE_BONUS_3 = 500
+SCORE_BONUS_2 = 200
+SCORE_DETRACTION_3 = 400
+SCORE_DETRACTION_2 = 5
+PREFER_HIGHER_ROWS_MULTIPLIER = 10
+PREFER_CENTRAL_COLUMN_MULTIPLIER = 3
+PREFER_NEARBY_COLUMNS_MULTIPLIER = 1
+ALPHA_BETA_DEPTH_LEVEL = 7
 
 
 def load_player(player):
@@ -43,9 +44,9 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer, player):
     if depth == 0 or board.winner():
         if depth != 0:
             if board.winner() == player:
-                return (math.inf, None)
+                return (999999999, None)
             elif board.winner() == 'O' if player == 'X' else 'X':
-                return (-math.inf, None)
+                return (-999999999, None)
             else:
                 return (scoreBoard(board, player), None)
         else:
@@ -126,10 +127,14 @@ def scoreBoard(game, player):
 
 def scoreSelection(selection, player):
     score = 0
-    if selection.count(player) == 3 and selection.count('O' if player == 'X' else 'X') == 0:
+    if selection.count(player) == 4:
+        score += SCORE_BONUS_4
+    elif selection.count(player) == 3 and selection.count('O' if player == 'X' else 'X') == 0:
         score += SCORE_BONUS_3
     elif selection.count(player) == 2 and selection.count('O' if player == 'X' else 'X') == 0:
         score += SCORE_BONUS_2
+    if selection.count('O' if player == 'X' else 'X') == 4:
+        score += SCORE_DETRACTION_4
     elif selection.count('O' if player == 'X' else 'X') == 3 and selection.count(player) == 0:
         score -= SCORE_DETRACTION_3
     elif selection.count('O' if player == 'X' else 'X') == 2 and selection.count(player) == 0:

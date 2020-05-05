@@ -1,4 +1,4 @@
-# Connect 4 AI - COMP 151
+# Connect 4 AI
 There is no lookup table for this project; all the work is done in the PlayerX and PlayerO files. This allows for less work to be done overall. The parameters for the algorithm can be changed by changing the constants on the top of each file.
 
 SCORE_BONUS_4 is the bonus given to the score if the AI player has a 4-in-a-row on a given board.
